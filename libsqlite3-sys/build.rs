@@ -206,6 +206,12 @@ mod build_bundled {
         // https://android.googlesource.com/platform/external/sqlite/+/2c8c9ae3b7e6f340a19a0001c2a889a211c9d8b2/dist/Android.mk
         if super::android_target() {
             cfg.flag("-DSQLITE_TEMP_STORE=3");
+            let target = env::var("TARGET").unwrap();
+            if target == "x86_64-linux-android" {
+                let ndk_home = env::var("ANDROID_NDK_HOME").unwrap();
+                println!("cargo:rustc-link-lib=static=clang_rt.builtins-x86_64-android");
+                println!("cargo:rustc-link-search={}/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/lib/linux", ndk_home);
+            }
         }
 
         if cfg!(feature = "with-asan") {
